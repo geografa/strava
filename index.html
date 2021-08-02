@@ -52,7 +52,7 @@
                 });
 
                 // setup the viewport
-                map.jumpTo({ 'center': coordinates[0], 'zoom': 15 });
+                map.jumpTo({ 'center': coordinates[0], 'zoom': 14 });
                 map.setPitch(30);
 
                 // on a regular basis, add more coordinates from the saved list and update the map
@@ -68,7 +68,51 @@
                     } else {
                         window.clearInterval(timer);
                     }
-                }, 50);
+                }, 30);
+            }
+        );
+        d3.json(
+            './sup/evan.geojson',
+            function(err, data) {
+                if (err) throw err;
+
+                // save full coordinate list for later
+                var coordinates = data.features[0].geometry.coordinates;
+
+                // start by showing just the first coordinate
+                data.features[0].geometry.coordinates = [coordinates[0]];
+
+                // add it to the map
+                map.addSource('trace2', { type: 'geojson', data: data });
+                map.addLayer({
+                    'id': 'trace2',
+                    'type': 'line',
+                    'source': 'trace2',
+                    'paint': {
+                        'line-color': 'cyan',
+                        'line-opacity': 0.75,
+                        'line-width': 5
+                    }
+                });
+
+                // setup the viewport
+                map.jumpTo({ 'center': coordinates[0], 'zoom': 14 });
+                map.setPitch(30);
+
+                // on a regular basis, add more coordinates from the saved list and update the map
+                var i = 0;
+                var timer = window.setInterval(function() {
+                    if (i < coordinates.length) {
+                        data.features[0].geometry.coordinates.push(
+                            coordinates[i]
+                        );
+                        map.getSource('trace2').setData(data);
+                        map.panTo(coordinates[i]);
+                        i++;
+                    } else {
+                        window.clearInterval(timer);
+                    }
+                }, 10);
             }
         );
     });

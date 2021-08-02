@@ -28,7 +28,7 @@
         // from GL JS's use in the added source. You can use any request method (library
         // or otherwise) that you want.
         d3.json(
-            './sup/A_Day_at_Ross_Island.geojson',
+            './sup/RI_loop_20210801.geojson',
             function(err, data) {
                 if (err) throw err;
 
@@ -68,7 +68,7 @@
                     } else {
                         window.clearInterval(timer);
                     }
-                }, 10);
+                }, 50);
             }
         );
     });

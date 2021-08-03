@@ -20,7 +20,7 @@
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/satellite-v9',
-        zoom: 13
+        zoom: 15
     });
 
     map.on('load', function() {
@@ -55,7 +55,7 @@
 
                 // setup the viewport
                 map.jumpTo({ 'center': coordinates[0], 'zoom': 15 });
-                map.setPitch(60);
+                map.setPitch(30);
 
                 // on a regular basis, add more coordinates from the saved list and update the map
                 var i = 0;
@@ -97,11 +97,6 @@
                         'line-width': 5
                     }
                 });
-
-                // setup the viewport
-                map.jumpTo({ 'center': coordinates[0], 'zoom': 15 });
-                map.setPitch(30);
-
                 // on a regular basis, add more coordinates from the saved list and update the map
                 var i = 0;
                 var timer = window.setInterval(function() {

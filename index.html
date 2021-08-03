@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <title>Strava Routes</title>
 <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-<script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
-<link href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css" rel="stylesheet" />
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
 <style>
 	body { margin: 0; padding: 0; }
 	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
@@ -20,7 +20,7 @@
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/satellite-v9',
-        zoom: 0
+        zoom: 13
     });
 
     map.on('load', function() {
@@ -107,12 +107,56 @@
                             coordinates[i]
                         );
                         map.getSource('trace2').setData(data);
-                        map.panTo(coordinates[i]);
+                        // map.panTo(coordinates[i]);
                         i++;
                     } else {
                         window.clearInterval(timer);
                     }
                 }, 10);
+            }
+        );
+        d3.json(
+            './sup/alicia.geojson',
+            function(err, data) {
+                if (err) throw err;
+
+                // save full coordinate list for later
+                var coordinates = data.features[0].geometry.coordinates;
+
+                // start by showing just the first coordinate
+                data.features[0].geometry.coordinates = [coordinates[0]];
+
+                // add it to the map
+                map.addSource('trace3', { type: 'geojson', data: data });
+                map.addLayer({
+                    'id': 'trace3',
+                    'type': 'line',
+                    'source': 'trace3',
+                    'paint': {
+                        'line-color': 'red',
+                        'line-opacity': 0.75,
+                        'line-width': 5
+                    }
+                });
+
+                // setup the viewport
+                map.jumpTo({ 'center': coordinates[0], 'zoom': 14 });
+                map.setPitch(30);
+
+                // on a regular basis, add more coordinates from the saved list and update the map
+                var i = 0;
+                var timer = window.setInterval(function() {
+                    if (i < coordinates.length) {
+                        data.features[0].geometry.coordinates.push(
+                            coordinates[i]
+                        );
+                        map.getSource('trace3').setData(data);
+                        map.panTo(coordinates[i]);
+                        i++;
+                    } else {
+                        window.clearInterval(timer);
+                    }
+                }, 60);
             }
         );
     });
